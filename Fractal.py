@@ -285,7 +285,7 @@ class Dimension_square(Scene):
         self.play(FadeOut(VGroup(
             square,square_1,square_2,square_3,square_4,
             brace_3,brace_4,label_3,label_4,
-            label
+            label,brace_1,brace_2,label_1,label_2
         )))
 
 
