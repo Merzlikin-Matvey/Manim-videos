@@ -1,4 +1,5 @@
 from ManimExtra import *
+config.max_files_cached = 512
 
 class Title(Scene):
     def construct(self):
@@ -57,7 +58,7 @@ class Title(Scene):
 
         circle = Circle().from_three_points(M_a.get_center(), M_b.get_center(), M_c.get_center(), color=YELLOW)
 
-        VGroup(AH_a, BH_b, CH_c, AM_a, BM_b, CM_c).set_opacity(0.3)
+        VGroup(AH_a, BH_b, CH_c, AM_a, BM_b, CM_c).set_opacity(0.7)
 
         ALL = VGroup(A, B, C, A_label, B_label, C_label, 
                      H_a, H_b, H_c, H_a_label, H_b_label, H_c_label, 
@@ -67,6 +68,15 @@ class Title(Scene):
                      a, b, c, circle )
         
         self.add(ALL)
+
+
+class Start(Scene):
+    def construct(self):
+        title = Tex("Euler's circle",font_size=95)
+        self.play(Write(title),run_time=2.5)
+        self.wait()
+        self.play(FadeOut(title))
+        self.wait(0.5)
 
 
 class Theorem(Scene):
@@ -303,6 +313,8 @@ class Theorem(Scene):
 
         label = Tex("Now let's prove it!")
         self.play(Fancy_label(label))
+        self.wait()
+        self.play(FadeOut(label))
 
 
 class Proof(Scene):
@@ -727,7 +739,7 @@ class Proof(Scene):
 
         self.play(FadeIn(VGroup(H, H_label)), BH.animate.set_opacity(0.8), CH.animate.set_opacity(0.8))
 
-        label = Tex("Then by Thales' theorem $BY=YH$ and $CZ=ZH$ ")
+        label = Tex("Then by Thales's theorem $BY=YH$ and $CZ=ZH$ ")
         self.play(Fancy_label(label))
 
         BH_equals = VGroup(Line(B.get_center(), Y.get_center()).equal(1),
@@ -778,7 +790,7 @@ class Proof(Scene):
                                 H_a, H_b, H_c, H_a_label, H_b_label, H_c_label)))
 
         self.wait(0.2)
-        label = Tex("So, 9 points lie on one circle, which is called the Euler circle")
+        label = Tex("So, 9 points lie on one circle, which is called the Euler's circle")
         self.play(Fancy_label(label))
 
         self.play(Create(circle))
@@ -791,6 +803,7 @@ class Proof(Scene):
             X, Y, Z, X_label, Y_label, Z_label,
             circle, a, b, c,
             AM_a, BM_b, CM_c, AH_a, BH_b, CH_c, 
+            label
             )
         self.play(FadeOut(ALL))
         
