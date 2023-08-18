@@ -3,6 +3,51 @@ from ManimExtra import *
 config.max_files_cached = 4096
 
 
+class Title(Scene):
+    def construct(self):
+        black_rectangle = Rectangle(height=1.6,width=20).shift(3.5*UP).set_color(BLACK).set_opacity(1).set_z_index(101)
+        self.add(black_rectangle)
+
+        label = Tex("Feuerbach's theorem", font_size=70).to_edge(UP).shift(0.1*DOWN).set_z_index(9999)
+
+        A = 2*LEFT + 2*DOWN 
+        B = 1.4*LEFT + 1.5*UP
+        C = 2*RIGHT + 2*DOWN 
+
+        a = Line(B, C, color=BLUE)
+        b = Line(A, C, color=BLUE)
+        c = Line(A, B, color=BLUE)
+
+        line_a = a.copy().set_length(20).set_opacity(0.5)
+        line_b = b.copy().set_length(20).set_opacity(0.5)
+        line_c = c.copy().set_length(20).set_opacity(0.5)
+        
+
+        self.add(label, a, b, c)
+
+        euler_circle = EulerCircle(A, B, C, color=RED, stroke_width=3.2).set_z_index(99)
+        incircle = InscribedCircle(A, B, C, color=GREEN, stroke_width=2.8)
+        excircle_A = EscribedCircle(B, A, C, color=GREEN, stroke_width=2.8)
+        excircle_B = EscribedCircle(A, B, C, color=GREEN, stroke_width=2.8)
+        excircle_C = EscribedCircle(A, C, B, color=GREEN, stroke_width=2.8)
+
+        self.add(euler_circle, incircle, excircle_A, excircle_B, excircle_C)
+        self.add(line_a, line_b, line_c)
+
+
+
+
+class Pre_start(Scene):
+    def construct(self):
+        title = Tex("Feuerbach's theorem", font_size=90).move_to(0.4*UP)
+        sub = Tex("PDF version in the description").set_opacity(0.6).move_to(0.5*DOWN)
+        self.play(Write(title), run_time=2.5)
+        self.play(Write(sub), run_time=1.8)
+        self.wait(0.5)
+        self.play(FadeOut(title), FadeOut(sub))
+        self.wait(0.5)
+
+
 class Start(Scene):
     def construct(self):
         black_rectangle = Rectangle(height=1.2,width=20).shift(3.5*UP).set_color(BLACK).set_opacity(1).set_z_index(101)
@@ -93,12 +138,11 @@ class Start(Scene):
         ALL = VGroup(A, B, C, a, b, c,
                      inscribed_circle, euler_circle, escribed_circles,
                      F, F_1, F_2, F_3, 
-                     line_a, line_b, line_c)
+                     line_a, line_b, line_c, label)
         self.play(FadeOut(ALL))
-        self.wait(0.1)
-        self.play(FadeOut(label))
 
-        label = Tex("But we will need a lot of auxiliary facts to prove it")
+
+        label = Tex("But we will need some auxiliary facts to prove it")
         self.play(Fancy_label(label))
         self.wait(0.3)
         self.play(FadeOut(label))
@@ -145,13 +189,12 @@ class Miquel(Scene):
         
         label = Tex("Let's construct 4 circles passing through these points")
         self.play(Fancy_label(label))
-        self.play(LaggedStart(
-            Create(circle_AB),
-            Create(circle_BC),
-            Create(circle_CD),
-            Create(circle_DA),
-            run_time=3, lag_ratio=0.85
-        ))
+
+        self.play(Create(circle_AB))
+        self.play(Create(circle_BC))
+        self.play(Create(circle_CD))
+        self.play(Create(circle_DA))
+
         self.wait(0.2)
         self.play(FadeOut(label))
 
@@ -163,7 +206,7 @@ class Miquel(Scene):
         C_1 = Dot(intersection_circles(circle_CD, circle_BC)[1]).set_z_index(1)
         D_1 = Dot(intersection_circles(circle_DA, circle_CD)[1]).set_z_index(1)
 
-        A_1_label = Tex(r"$A\mathrm{A_1}$",font_size=28).next_to(A_1.get_center(),direction=UR,buff=0.13).set_z_index(9)
+        A_1_label = Tex(r"$\mathrm{A_1}$",font_size=28).next_to(A_1.get_center(),direction=UR,buff=0.13).set_z_index(9)
         B_1_label = Tex(r"$\mathrm{B_1}$",font_size=28).next_to(B_1.get_center(),direction=UL,buff=0.13).set_z_index(9)
         C_1_label = Tex(r"$\mathrm{C_1}$",font_size=28).next_to(C_1.get_center(),direction=(2*LEFT+0.7*DOWN),buff=0.08).set_z_index(9)
         D_1_label = Tex(r"$\mathrm{D_1}$",font_size=28).next_to(D_1.get_center(),direction=(2*RIGHT+0.7*DOWN),buff=0.08).set_z_index(9)
@@ -180,7 +223,7 @@ class Miquel(Scene):
 
         self.play(FadeOut(label))
 
-        label = Tex("And these points will lie on the same circle")
+        label = Tex("And these 4 points are on the same circle")
         self.play(Fancy_label(label))
         result_circle = Circle().from_three_points(A_1.get_center(), B_1.get_center(), C_1.get_center(), color=RED)
         self.play(VGroup(A_1_label, B_1_label, C_1_label, D_1_label).animate.set_opacity(0.9))
@@ -196,9 +239,10 @@ class Miquel(Scene):
         self.play(Fancy_label(label))
         self.wait(0.3)
         self.play(FadeOut(label))
-        label = Tex("Quadrilateral $B_1C_1CB$ inscribed")
+        label = Tex("Quadrilateral $D_1A_1AD$ inscribed")
         self.play(Fancy_label(label))
         self.play(Uncreate(result_circle), circle.animate.set_stroke(opacity=0.75))
+        self.wait()
         self.play(FadeOut(label))
 
         label = Tex(r"If we denote  $\angle{D_1DA}$ as $\alpha$, then $\angle{D_1A_1A}=180^{\circ}-\alpha$")
@@ -217,6 +261,7 @@ class Miquel(Scene):
             lag_ratio=0.7,
             run_time=5
         ))
+        self.wait(0.8)
 
         self.play(FadeOut(DD_1, DA, angle_D_1DA, angle_D_1DA_label), run_time=0.5)
 
@@ -260,15 +305,18 @@ class Miquel(Scene):
 
         B_1A_1 = Line(B_1.get_center(), A_1.get_center(), color=GREEN)
         angle_B_1A_1A = Angle().from_three_points(B_1.get_center(), A_1.get_center(), A.get_center(), radius=0.2)
-        angle_B_1A_1A_label = Tex(r"$\mathrm{180^{\circ}-\beta}$",font_size=25).move_to(A_1.get_center()+np.array([-0.32,0.43,0]))
+        angle_B_1A_1A_label = Tex(r"$\mathrm{180^{\circ}-\beta}$",font_size=25).move_to(
+            A_1.get_center()+np.array([-0.32,0.43,0])).set_z_index(-1)
 
         self.play(LaggedStart(
             Create(B_1A_1),
             A_1A.animate.set_opacity(1),
             Create(angle_B_1A_1A),
-            FadeIn(angle_B_1A_1A_label),
-            run_time=2.5, lag_ratio=0.8
+            run_time=2.2, lag_ratio=0.8
         ))
+        self.wait(0.01)
+        self.play(FadeIn(angle_B_1A_1A_label))
+        self.wait(0.01)
         self.wait(0.3)
         self.play(angle_D_1A_1A_label.animate.set_opacity(1), 
                   angle_D_1A_1A.animate.set_stroke(opacity=1),
@@ -281,14 +329,14 @@ class Miquel(Scene):
 
         angle_B_1A_1D_1 = Angle().from_three_points(
             B_1.get_center(), A_1.get_center(), D_1.get_center(), radius=0.2)
-        angle_B_1A_1D_1_label = MathTex(r"$\mathrm{\alpha+\beta}$",font_size=24).move_to(
+        angle_B_1A_1D_1_label = Tex(r"$\mathrm{\alpha + \beta}$",font_size=24).move_to(
             A_1.get_center()+np.array([-0.4,-0.3,0]))
         
         self.play(Create(angle_B_1A_1D_1), FadeIn(angle_B_1A_1D_1_label))
         self.play(FadeOut(VGroup(A_1A, angle_B_1A_1A, angle_B_1A_1A_label, angle_D_1A_1A, angle_D_1A_1A_label)))
         self.play(FadeOut(label))
 
-        label = Tex("Let's do the same, but for different angles")
+        label = Tex("Let's do the same, but for another angles")
         self.play(Fancy_label(label))
 
         BC = Line(B.get_center(), C.get_center(), color=GREEN).set_opacity(0.8)
@@ -312,7 +360,7 @@ class Miquel(Scene):
         angle_CDD_1 = Angle().from_three_points(C.get_center(), D.get_center(), D_1.get_center(), 
                                                 radius=0.2).set_stroke(opacity=0.8)
         angle_CDD_1_label = Tex(r"$\mathrm{\delta}$",font_size=31).move_to(
-            D.get_center()+np.array([-0.35,0.3,0])).set_opacity(0.8)
+            D.get_center()+np.array([-0.3,0.25,0])).set_opacity(0.8)
 
         self.play(LaggedStart(
             Create(CD),
@@ -357,14 +405,24 @@ class Miquel(Scene):
 
         self.play(FadeOut(label))
 
-        label = Tex(r"We get that $\angle{CDA}+\angle{CBA}=\alpha+\beta+\gamma+\delta=\angle{B_1C_1D_1}+\angle{B_1A_1D_1}=180^{\circ}$")
+        label = Tex(r"So $\angle{CDA}+\angle{CBA}=\alpha+\beta+\gamma+\delta=\angle{B_1C_1D_1}+\angle{B_1A_1D_1}=180^{\circ}$", font_size=40)
         self.play(Fancy_label(label))    
-        self.wait()
+        self.wait(2)
         self.play(FadeOut(label))
 
-        label = Tex(r"Therefore, the points $A_1, B_1, C_1, D_1$ lie on the same circle") 
+        label = Tex(r"Therefore, points $A_1, B_1, C_1, D_1$ are on the same circle") 
         self.play(Fancy_label(label))
-        self.play(Create(result_circle))
+        new_result_circle = Circle().from_three_points(
+            A_1.get_center(), B_1.get_center(), C_1.get_center(), color=RED)
+        self.play(FadeIn(new_result_circle))
+        self.play(FadeOut(VGroup(
+            BA, CD, DA, BC, 
+            angle_ADC, angle_ADC_label, 
+            angle_CBA, angle_CBA_label, 
+            angle_B_1A_1D_1, angle_B_1A_1D_1_label, 
+            angle_B_1C_1D_1, angle_B_1C_1D_1_label, 
+            B_1A_1, C_1B_1, C_1D_1, D_1A_1,
+        )))
         self.wait(0.5)
 
 
@@ -373,15 +431,9 @@ class Miquel(Scene):
             A_label, B_label, C_label, D_label,
             A_1, B_1, C_1, D_1,
             A_1_label, B_1_label, C_1_label, D_1_label,
-            BA, CD, DA, BC, 
-            B_1A_1, C_1B_1, C_1D_1, D_1A_1,
-            angle_B_1A_1D_1, angle_B_1A_1D_1_label, 
-            angle_B_1C_1D_1, angle_B_1C_1D_1_label, 
-            angle_ADC, angle_ADC_label, 
-            angle_CBA, angle_CBA_label, 
             circle, result_circle,
             circle_AB, circle_BC, circle_CD, circle_DA, 
-            label
+            label, new_result_circle
         )
         self.play(FadeOut(ALL))
 
@@ -471,7 +523,7 @@ class Miquel_consequence_1(Scene):
         ))
 
         self.play(FadeOut(label))
-        label = Tex("Let's omit the perpendiculars on the diagonal from the vertices", font_size=46)
+        label = Tex("Let's omit the perpendiculars on the diagonals from the vertices", font_size=46)
         self.play(Fancy_label(label))
 
         self.play(LaggedStart(
@@ -500,7 +552,7 @@ class Miquel_consequence_1(Scene):
 
         self.play(FadeOut(label))
 
-        label = Tex("And then the bases of the perpendiculars lie on the same circle", font_size=44)
+        label = Tex("And then the bases of the perpendiculars are on the same circle", font_size=44)
         self.play(Fancy_label(label))
 
         self.play(VGroup(
@@ -516,7 +568,7 @@ class Miquel_consequence_1(Scene):
         self.wait(0.2)
 
         self.play(Create(result_circle))
-        self.wait()
+        self.wait(2)
         self.play(Uncreate(result_circle))
         self.play(FadeOut(label))
 
@@ -544,7 +596,7 @@ class Miquel_consequence_1(Scene):
         self.wait(0.15)
         self.play(FadeOut(label))
 
-        label = Tex("So $H_a, H_b, H_c, H_d$ lie on the same circle")
+        label = Tex("So $H_a, H_b, H_c, H_d$ are on the same circle")
         self.play(Fancy_label(label))
         self.play(circle.animate.set_stroke(opacity=1))
         self.play(VGroup(
@@ -685,17 +737,14 @@ class Miquel_consequence_2(Scene):
 
         self.play(FadeOut(label))
 
-        label = Tex("And now we denote the middle of the AC")
+        label = Tex("And now we denote the middle of AC")
         self.play(Fancy_label(label))
 
         self.play(FadeIn(VGroup(M_b, M_b_label)))
-        self.play(FadeIn(M_b_equals), run_time=0.75)
-        self.wait(0.75)
-        self.play(FadeOut(M_b_equals), run_time=0.75)
-
+        self.wait(0.2)
         self.play(FadeOut(label))
 
-        label = Tex(r"Then the points $H_a, H_b, H_c, M_b$ lie on the same circle")
+        label = Tex(r"Then the points $H_a, H_b, H_c, M_b$ are on the same circle")
         self.play(Fancy_label(label))
 
         self.play(
@@ -708,11 +757,11 @@ class Miquel_consequence_2(Scene):
         result_circle = CircumscribedCircle(H_a.get_center(), H_b.get_center(), H_c.get_center(), color=RED)
 
         self.play(Create(result_circle))
-        self.wait()
+        self.wait(2)
         self.play(Uncreate(result_circle))
         self.play(FadeOut(label))
 
-        label = Tex("To prove it , we draw a circumscribed circle")
+        label = Tex("To prove it, we draw a circumscribed circle")
         self.play(Fancy_label(label))
         self.play(Create(circumcircle))
         self.wait(0.2)
@@ -734,7 +783,7 @@ class Miquel_consequence_2(Scene):
         self.play(FadeIn(L_equals))
         self.play(FadeOut(label))
 
-        label = Tex(r"So $ABC$ is isosceles, and the median $LM_b$ is also the altitude", font_size=44)
+        label = Tex(r"So $ALC$ is isosceles, and the median $LM_b$ is also the altitude", font_size=44)
         self.play(Fancy_label(label))
 
         self.play(Create(LM_b))
@@ -768,7 +817,7 @@ class Miquel_consequence_2(Scene):
 
 
         self.play(Create(result_circle))
-        self.wait()
+        self.wait(1.5)
         self.play(FadeOut(label))
 
         label = Tex("Okay, where is the center of this circle?")
@@ -776,7 +825,7 @@ class Miquel_consequence_2(Scene):
         self.wait()
         self.play(FadeOut(label))
 
-        label = Tex("The center of this circle is on the Euler's circle of triangle $\triangle ABC$", font_size=46)
+        label = Tex("The center of this circle is on the Euler's circle of triangle $ABC$", font_size=44)
         self.play(Fancy_label(label))
     
         self.play(
@@ -810,7 +859,7 @@ class Miquel_consequence_2(Scene):
 
         label = Tex("We prove that $O$ is on the perpendicular bisectors to $H_bM_b$ and $H_aH_c$", font_size=42)
         self.play(Fancy_label(label))
-        self.wait(0.6)
+        self.wait()
         self.play(FadeOut(label))
 
         label = Tex("From the definition of $O$, it lies on perpendicular bisector $H_bM_b$", font_size=44)
@@ -845,12 +894,12 @@ class Miquel_consequence_2(Scene):
         ))
         self.play(FadeOut(label))
 
-        label = Tex(r"Obviously, $H_bM_c=\dfrac{AB}{2}$ as the median of a right triangle", font_size=44)
+        label = Tex(r"Obviously, $H_bM_c=\frac{AB}{2}$ as the median of a right triangle", font_size=44)
         self.play(Fancy_label(label))
         self.wait()
         self.play(FadeOut(label))
 
-        label = Tex(r"And $M_bM_c=\dfrac{AB}{2}$ as the middle line, so $M_bM_c=H_bM_c$", font_size=44)
+        label = Tex(r"And $M_bM_c=\frac{AB}{2}$ as the middle line, so $M_bM_c=H_bM_c$", font_size=44)
         self.play(Fancy_label(label))
 
         M_cH_b = Line(M_c.get_center(), H_b.get_center(), color=YELLOW)
@@ -909,9 +958,13 @@ class Miquel_consequence_2(Scene):
         self.play(FadeOut(label))
 
         label = Tex("$BM_aM_bM_c$ is a parallelogram, so $BL$ is parallel to $M_bO_1$")
+        self.play(Fancy_label(label))
 
         for_paral_line = Line(B.get_center(), BL.point_from_proportion(0.7))
         paral_1 = VGroup(for_paral_line.paral(), M_bO_1.paral(rotate=True))
+
+        VGroup(H_a, H_a_label).set_opacity(0)
+        self.add(VGroup(H_a, H_a_label))
 
         self.play(FadeIn(paral_1))
         self.play(FadeOut(VGroup(
@@ -949,7 +1002,7 @@ class Miquel_consequence_2(Scene):
             Line(H_c.get_center(), tmp.get_center()).equal().scale(0.6).set_opacity(0.8),
             )
         self.play(FadeIn(VGroup(tmp, tmp_equals)))
-        self.wait(0.5)
+        self.wait(1.5)
         self.play(FadeOut(label), FadeOut(VGroup(
             tmp, tmp_equals, OM_b, angle_OM_bO_1, paral_1, M_bO_1
             )))
@@ -957,11 +1010,11 @@ class Miquel_consequence_2(Scene):
         label = Tex("It means that $O$ is the center of the circle $H_aH_bH_cM_b$", font_size=46)
         self.play(Fancy_label(label))
         self.play(Create(result_circle))
-        self.wait(1.5)
+        self.wait(2.5)
 
         ALL = VGroup(
             A, B, C, AB, BC, CA, 
-            AL, CL, L, 
+            AL, CL, L, L_label,
             A_label, B_label, C_label, 
             H_a_label, H_b_label, H_c_label, 
             M_b, M_b_label, 
@@ -1038,7 +1091,7 @@ class Miquel_consequence_3(Scene):
             run_time=2.2, lag_ratio=0.7
         ))
 
-        label = Tex(r"As last time, we will lower the perpendiculars to the bisector of the angle $\angle{B}$", font_size=40)     
+        label = Tex(r"We will lower the perpendiculars to the bisector of the angle $\angle{B}$", font_size=42)     
         self.play(Fancy_label(label))
 
         self.play(Create(B_bisector))
@@ -1053,7 +1106,7 @@ class Miquel_consequence_3(Scene):
         
         self.play(FadeOut(label))
 
-        label = Tex("Now let's build an inscribed circle=")
+        label = Tex("Now let's build an inscribed circle")
         self.play(Fancy_label(label))
         self.play(VGroup(AH_a, CH_c).animate.set_opacity(0.4), 
                   VGroup(H_a_angle, H_c_angle).animate.set_stroke(opacity=0.5))
@@ -1082,7 +1135,7 @@ class Miquel_consequence_3(Scene):
 
         self.play(VGroup(X, X_label).animate.set_opacity(1))
 
-        label = Tex("It turns out that the points $H_a, H_c, X, Y$ on the same circle")
+        label = Tex("It turns out that the points $H_a, H_c, X, Y$ are on the same circle", font_size=46)
         circle = Circle().from_three_points(H_a.get_center(), H_c.get_center(), X.get_center(), color=YELLOW)
         self.play(Fancy_label(label))
         self.play(Create(circle))
@@ -1091,6 +1144,14 @@ class Miquel_consequence_3(Scene):
 
         label = Tex("Prove this fact yourself, it's not difficult")
         self.play(Fancy_label(label))
+        self.wait(1.5)
+        self.play(FadeOut(label))
+
+        label = Tex("Also prove that the center of this circle is the middle of AC")
+        self.play(Fancy_label(label))
+        M_b = Dot(CA.get_center())
+        M_b_label = Tex(r"$\mathrm{M_b}$", font_size=30).next_to(M_b.get_center(), DOWN, buff=0.12)
+        self.play(FadeIn(VGroup(M_b, M_b_label)))
         self.wait(2)
 
         ALL = VGroup(
@@ -1100,14 +1161,15 @@ class Miquel_consequence_3(Scene):
             X, X_label, Y, Y_label, 
             H_a, H_a_label, H_c, H_c_label, circle,
             H_a_angle, H_c_angle, AH_a, CH_c,
+            M_b, M_b_label,
             label
         )
         self.play(FadeOut(ALL))
 
-        self.wait(3)
+        self.wait()
 
 
-class Archimedes_lemma(Scene):
+class Archimedes_lemma(Scene):  
     def construct(self):
         black_rectangle = Rectangle(height=1.2,width=20).shift(3.5*UP).set_color(BLACK).set_opacity(1).set_z_index(101)
         self.add(black_rectangle)
@@ -1134,7 +1196,7 @@ class Archimedes_lemma(Scene):
         B_label = Tex("B", font_size=30).next_to(B.get_center(), DOWN, buff=0.1).set_z_index(9)
 
         perpendicular_bisector_AB = PerpendicularBisector(A.get_center(), B.get_center())
-        perpendicular_B = Perpendicular(M.get_center(), N.get_center(), B.get_center())
+        perpendicular_B = Perpendicular(Line(M.get_center(), N.get_center()), B.get_center())
         X = intersection_lines(perpendicular_bisector_AB, perpendicular_B)
 
         omega = Circle(radius=Line(X, B.get_center()).get_length(), arc_center=X)
@@ -1171,14 +1233,14 @@ class Archimedes_lemma(Scene):
         ))
         self.play(FadeOut(label))
 
-        label = Tex("Let's construct a circle that $\omega$ touches both $MN$ and $\Omega$")
+        label = Tex("Let's construct a circle $\omega$ that touches both $MN$ and $\Omega$")
         self.play(Fancy_label(label))
         self.play(Create(omega))
         self.play(FadeIn(omega_label), run_time=0.6)
         self.wait(0.5)
         self.play(FadeOut(label))
 
-        label = Tex(r"$A$ and $B$ are the points of tangency of $\omega$ with $\omega$ and $MN$, respectively", font_size=44)
+        label = Tex(r"$A$ and $B$ are the points of tangency of $\omega$ with $\Omega$ and $MN$", font_size=44)
         self.play(Fancy_label(label))
         self.play(LaggedStart(
             FadeIn(VGroup(A, A_label)),
@@ -1227,7 +1289,7 @@ class Archimedes_lemma(Scene):
         self.wait(0.3)
         self.play(FadeOut(label))
 
-        label = Tex(r"But $KA=KB$, so $\angle{KBA}=\alpha+\beta$")
+        label = Tex(r"But $KA=KB$ as tangents to $\omega$, so $\angle{KBA}=\alpha+\beta$")
         self.play(Fancy_label(label, mode='low'))
 
         angle_KBA = Angle().from_three_points(K.get_center(), B.get_center(), A.get_center(), radius=0.17)
@@ -1243,7 +1305,7 @@ class Archimedes_lemma(Scene):
         self.wait(1.5)
         self.play(FadeOut(label))
 
-        label = Tex(r"So $\angle{KAB}=\angle{ANM}=\alpha$")
+        label = Tex(r"So $\angle{KAM}=\angle{ANM}=\alpha$")
         self.play(Fancy_label(label, mode='low'))
         self.wait(0.2)
 
@@ -1251,7 +1313,7 @@ class Archimedes_lemma(Scene):
         angle_ANM_label = Tex(r"$\alpha$", font_size=28).next_to(N.get_center(), np.array([-0.9, 0.1, 0]), buff=0.6)
 
         self.play(FadeIn(VGroup(angle_ANM_label, angle_ANM)))
-        self.wait(0.5)
+        self.wait()
         self.play(FadeOut(label))
 
         label = Tex(r"But then $\angle{BAN}=\angle{MBA}-\angle{MNA}=\beta$")
@@ -1260,7 +1322,7 @@ class Archimedes_lemma(Scene):
         angle_BAN_label = Tex(r"$\beta$", font_size=28).next_to(A.get_center(), np.array([0.5,-0.8,0]), buff=0.27)
 
         self.play(FadeIn(VGroup(angle_BAN, angle_BAN_label)))
-        self.wait(0.2)
+        self.wait(2.5)
         self.play(FadeOut(VGroup(
             angle_KBA, angle_KBA_label, angle_KAM, angle_KAM_label, angle_ANM, angle_ANM_label, label)))
         
@@ -1275,7 +1337,7 @@ class Archimedes_lemma(Scene):
         self.play(FadeOut(VGroup(
             M, N, M_label, N_label, 
             A, B, A_label, B_label, 
-            omega, Omega, omega_label, Omega_label, 
+            Omega, Omega_label, 
             tangent, MN, MK, K, K_label,
             angle_MAB, angle_MAB_label, angle_BAN, angle_BAN_label, 
             MA, AN, AB,
@@ -1313,7 +1375,7 @@ class External_archimedes_lemma(Scene):
         B_label = Tex("B", font_size=30).next_to(B.get_center(), DOWN, buff=0.13).set_z_index(3)
 
         O_2 = Dot(intersection_lines(
-            Perpendicular(M.get_center(), N.get_center(), B.get_center()),
+            Perpendicular(Line(M.get_center(), N.get_center()), B.get_center()),
             PerpendicularBisector(B.get_center(), A.get_center())
         )).set_z_index(1)
         O_2_label = Tex(r"$\mathrm{O_2}$", font_size=32).next_to(O_2.get_center(), UP, buff=0.13)
@@ -1336,7 +1398,7 @@ class External_archimedes_lemma(Scene):
         paral = VGroup(O_1C.paral(), O_2B.paral(rotate=True))
 
         O_2B_angle = Angle().from_three_points(
-            O_2.get_center()+IN, B.get_center()+IN, MN.get_start(), 
+            O_2.get_center(), B.get_center(), MN.get_start(), 
             elbow=True, radius=0.25, color=YELLOW)
         O_2B_angle_copy = O_2B_angle.copy()
 
@@ -1371,7 +1433,7 @@ class External_archimedes_lemma(Scene):
         self.wait(0.3)
         self.play(FadeOut(label))
 
-        label = Tex("$C$ is the intersection point of the line $AB$ with circle $\omega$")
+        label = Tex("$C$ is the intersection point of the line $AB$ with circle $\Omega$")
         self.play(Fancy_label(label))
         self.play(FadeIn(VGroup(C, C_label)))
         self.wait(0.2)
@@ -1380,7 +1442,7 @@ class External_archimedes_lemma(Scene):
         label = Tex("Then the line $BC$ divides the arc $MN$ in half")
         self.play(Fancy_label(label))
         self.play(Create(BC))
-        self.wait(0.3)
+        self.wait(1.5)
         self.play(FadeOut(label))
         
         label = Tex("$O_1C = O_1A$ as the radii of the circle")
@@ -1407,13 +1469,13 @@ class External_archimedes_lemma(Scene):
         self.wait(0.2)
         self.play(FadeOut(label))
 
-        label = Tex(r"Obviously, $O_1, A, O_2$ are on the sameline, then $\angle{O_2AB}=\angle{CAO_1}$", font_size=44)
+        label = Tex(r"Obviously, $O_1, A, O_2$ are on the same line, then $\angle{O_2AB}=\angle{CAO_1}$", font_size=44)
         self.play(Fancy_label(label))
 
         tmp_angle_1 = Angle().from_three_points(
-            O_2.get_center()+IN, A.get_center(), B.get_center()+IN, radius=0.2)
+            O_2.get_center(), A.get_center(), B.get_center(), radius=0.2).set_z_index(-1)
         tmp_angle_2 = Angle().from_three_points(
-            O_1.get_center(), A.get_center(), C.get_center(), radius=0.2)
+            O_1.get_center(), A.get_center(), C.get_center(), radius=0.2).set_z_index(-1)
         
         self.play(FadeIn(tmp_angle_1), run_time=0.75)
         self.play(FadeIn(tmp_angle_2), run_time=0.75)
@@ -1491,7 +1553,7 @@ class Exercise_1(Scene):
         B_label = Tex("B", font_size=30).next_to(B.get_center(), DOWN, buff=0.1).set_z_index(9)
 
         perpendicular_bisector_AB = PerpendicularBisector(A.get_center(), B.get_center())
-        perpendicular_B = Perpendicular(M.get_center(), N.get_center(), B.get_center())
+        perpendicular_B = Perpendicular(Line(M.get_center(), N.get_center()), B.get_center())
         X = intersection_lines(perpendicular_bisector_AB, perpendicular_B)
 
         omega = Circle(radius=Line(X, B.get_center()).get_length(), arc_center=X)
@@ -1527,7 +1589,7 @@ class Exercise_1(Scene):
         ALL = VGroup(
             M, N, M_label, N_label, 
             B, B_label, Omega, omega,
-            Omega_label, omega_label
+            Omega_label, omega_label, MN, label
         )
         self.play(FadeOut(ALL))
         self.wait(0.7)
@@ -1556,7 +1618,7 @@ class Exercise_2(Scene):
         B_label = Tex("B", font_size=30).next_to(B.get_center(), np.array([-0.1,-0.9,0]), buff=0.1).set_z_index(9)
 
         perpendicular_bisector_AB = PerpendicularBisector(A.get_center(), B.get_center())
-        perpendicular_B = Perpendicular(M.get_center(), N.get_center(), B.get_center())
+        perpendicular_B = Perpendicular(Line(M.get_center(), N.get_center()), B.get_center())
         X = intersection_lines(perpendicular_bisector_AB, perpendicular_B)
 
         omega = Circle(radius=Line(X, B.get_center()).get_length(), arc_center=X, color=YELLOW)
@@ -1573,8 +1635,6 @@ class Exercise_2(Scene):
 
         label = Tex("Let's build a similar construction")
         self.play(Fancy_label(label))
-
-
 
         self.play(Create(Omega))
         self.play(FadeIn(Omega_label))
@@ -1600,7 +1660,7 @@ class Exercise_2(Scene):
 
         label = Tex("Prove that $LM^2=LN^2=LB \cdot LA$")
         self.play(Fancy_label(label, mode='low'))
-        self.play(omega.animate.set_stroke(opacity=0.4), omega_label.set_opacity(0.4))
+        self.play(omega.animate.set_stroke(opacity=0.4), omega_label.animate.set_opacity(0.4))
         self.play(LaggedStart(
             Create(AL),
             Create(LM),
@@ -1614,7 +1674,7 @@ class Exercise_2(Scene):
             A, B, A_label, B_label, 
             L, L_label, 
             Omega, omega, Omega_label, omega_label,
-            AL, LM, LN
+            AL, LM, LN, MN, label
         )
         self.play(FadeOut(ALL))
         self.wait(0.5)
@@ -1632,9 +1692,13 @@ class Definition(Scene):
 
         angle = Angle().from_three_points(
             tangent_1.get_start(), A.get_center(), tangent_2.get_end(), color=RED, radius=0.27)
-
+        
+        label = Tex("Let's define the angle between the circles")
+        self.play(Fancy_label(label))
         self.play(Create(circle_1))
         self.play(Create(circle_2))
+        self.wait(0.2)
+        self.play(FadeOut(label))
 
         label = Tex("Let's draw tangents to the intersection point of the circles", font_size=44)
         self.play(Fancy_label(label))
@@ -1682,7 +1746,7 @@ class Lemma_1(Scene):
         B_label = Tex("B", font_size=30).next_to(B.get_center(), np.array([-0.1,-0.9,0]), buff=0.1).set_z_index(9)
 
         perpendicular_bisector_AB = PerpendicularBisector(A.get_center(), B.get_center())
-        perpendicular_B = Perpendicular(M.get_center(), N.get_center(), B.get_center())
+        perpendicular_B = Perpendicular(Line(M.get_center(), N.get_center()), B.get_center())
         X = intersection_lines(perpendicular_bisector_AB, perpendicular_B)
 
         omega = Circle(radius=Line(X, B.get_center()).get_length(), arc_center=X, color=YELLOW)
@@ -1719,6 +1783,7 @@ class Lemma_1(Scene):
 
         label = Tex("Let's construct a circle $\omega_1$ with center in $L$ and radius $LM$", font_size=46)
         self.play(Fancy_label(label))
+        self.wait(0.1)
         self.play(Create(omega_1))
         self.play(FadeIn(omega_1_label))
         self.play(FadeOut(label))
@@ -1748,7 +1813,7 @@ class Lemma_1(Scene):
 
         label = Tex("So $\omega$ and $\omega_1$ are perpendicular")
         self.play(Fancy_label(label))
-        self.wait(1.5)
+        self.wait(2)
 
         ALL = VGroup(
             M, N, M_label, N_label, 
@@ -1805,7 +1870,7 @@ class Lemma_2(Scene):
         O_3_label = Tex(r"$\mathrm{O_3}$", font_size=30).next_to(O_3.get_center(), np.array([0.9, -0.3, 0]), buff=0.15).set_z_index(1)
 
         omega_3 = Circle(radius=Line(O_3.get_center(), C.get_center()).get_length(), arc_center=O_3.get_center())
-        omega_3_label = Tex("$\mathrm{\omega_3}$", font_size=30).move_to(1.7*DOWN+1.65*RIGHT).set_z_index(1)
+        omega_3_label = Tex("$\mathrm{\omega_3}$", font_size=30).move_to(1.7*DOWN+1.75*RIGHT).set_z_index(1)
 
         D = Dot(intersection_circles(omega_2, omega_3)[0]).set_z_index(1)
         D_label = Tex("D", font_size=30).next_to(D.get_center(), np.array([0.8, -0.3, 0]), buff=0.15).set_z_index(1)
@@ -1961,11 +2026,11 @@ class Archimedes_criteria(Scene):
             Bisector(M.get_center(), A.get_center(), N.get_center()),
             MN)).set_z_index(1)
         
-        A_label = Tex("A", font_size=32).next_to(A.get_center(), UL, buff=0.13).set_z_index(1)
+        A_label = Tex("A", font_size=32).next_to(A.get_center(), UL, buff=0.11).set_z_index(1)
         B_label = Tex("B", font_size=32).next_to(B.get_center(), DOWN, buff=0.13).set_z_index(1)
 
         perpendicular_bisector_AB = PerpendicularBisector(A.get_center(), B.get_center())
-        perpendicular_B = Perpendicular(M.get_center(), N.get_center(), B.get_center())
+        perpendicular_B = Perpendicular(Line(M.get_center(), N.get_center()), B.get_center())
         X = intersection_lines(perpendicular_bisector_AB, perpendicular_B)
 
         omega = Circle(radius=Line(X, B.get_center()).get_length(), arc_center=X)
@@ -1997,7 +2062,7 @@ class Archimedes_criteria(Scene):
         self.play(Create(MN))
         self.play(FadeOut(label))
 
-        label = Tex(r"The circle $\omega$ touches $MN$ at point $B$")
+        label = Tex(r"Circle $\omega$ touches $MN$ at point $B$")
         self.play(Fancy_label(label))
         omega_label.shift(0.1*omega.radius*DOWN+0.1*RIGHT)
         omega_now = omega_fake.copy()
@@ -2045,7 +2110,7 @@ class Archimedes_criteria(Scene):
         self.wait()
         self.play(FadeOut(label))
 
-        label = Tex("Recently we have already proved that in this case $\omega_1$ and $\omega'$ are perpendicular", font_size=40)  
+        label = Tex("Recently we have already proved that $\omega_1$ and $\omega'$ are perpendicular", font_size=42)  
         self.play(Fancy_label(label))
         self.wait(1.5)
         self.play(FadeOut(label))
@@ -2061,7 +2126,7 @@ class Archimedes_criteria(Scene):
         self.wait(0.5)
         self.play(FadeOut(label))
 
-        label = Tex("So $C, B, L$ must lie on the same line")
+        label = Tex("So $C, B, L$ must be on the same line")
         self.play(Fancy_label(label))
         self.wait(1.5)
         self.play(FadeOut(label))
@@ -2085,34 +2150,66 @@ class Archimedes_criteria(Scene):
         ALL = VGroup(
             Omega, omega_now, omega_1, Omega_label, omega_1_label,
             A, B, M, N, A_label, B_label, M_label, N_label, 
-            label, MN
+            label, MN, omega_label, L, L_label
         )
         self.play(FadeOut(ALL))
-
-
-        self.wait(3)
+        self.wait()
 
 
 class External_archimedes_criteria(Scene):
     def construct(self):
-        A = Dot(LEFT+UP)
-        B = Dot(3*UP)
-        C = Dot(2*RIGHT+UP)
+        A = Dot(LEFT)
+        B = Dot(5*UP+3*LEFT)
+        C = Dot(1.7*RIGHT)
 
         Omega = EulerCircle(A.get_center(), B.get_center(), C.get_center(), color=BLUE)
         omega = EscribedCircle(A.get_center(), B.get_center(), C.get_center(), color=RED)
+    
+        H_b = Dot(Altitude(A.get_center(), B.get_center(), C.get_center()).get_base()).set_z_index(1)
+        M_b = Dot(Median(A.get_center(), B.get_center(), C.get_center()).get_base()).set_z_index(1)
 
-        self.add(Omega, omega)    
+        L = Dot(Omega.point_at_angle(-0.5*PI)).set_z_index(1)
+        L_label = Tex("L", font_size=30).next_to(L.get_center(), DOWN, buff=0.12).set_z_index(1)
+
+        omega_1 = Circle(
+            arc_center=Omega.point_at_angle(-0.5*PI),
+            radius = Line(Omega.point_at_angle(-0.5*PI),
+                          Line(A.get_center(), C.get_center()).get_center()).get_length(), 
+            color=YELLOW
+        )
+        line = Line(H_b.get_center(), M_b.get_center(), color=GREEN).set_opacity(0.6).set_length(30)
+
+        H_b_label = Tex("N", font_size=30).next_to(H_b.get_center(), np.array([-0.9, 0.4, 0]), buff=0.15).set_z_index(1)
+        M_b_label = Tex("M", font_size=30).next_to(M_b.get_center(), np.array([0.9, 0.4, 0]), buff=0.15).set_z_index(1)
+
+        Omega_label = Tex("$\mathrm{\Omega}$", font_size=30).move_to(2.85*LEFT+1.5*UP)
+        omega_label = Tex("$\mathrm{\omega}$", font_size=30).move_to(1.9*RIGHT+0.5*DOWN)
+        omega_1_label = Tex("$\mathrm{\omega_1}$", font_size=30).move_to(3.05*LEFT+1*DOWN)
+
+        label = Tex("Prove the criteria for external touch yourself")
+        self.play(Fancy_label(label))
 
 
+        self.play(Create(Omega), FadeIn(Omega_label))
+        self.play(LaggedStart(
+            FadeIn(VGroup(H_b, H_b_label)),
+            FadeIn(VGroup(M_b, M_b_label)),
+            run_time=1, lag_ratio=0.7
+        ))
+        
+        self.play(FadeIn(line))
+        self.play(FadeIn(VGroup(L, L_label)))
+        self.play(Create(omega_1), FadeIn(omega_1_label))
+        self.play(Create(omega), FadeIn(omega_label))
 
+        self.wait(2.5)
 
-
-
-
-
-
-        self.wait(3) 
+        ALL = VGroup(
+            Omega, omega, omega_1, Omega_label, omega_label, omega_1_label,
+            M_b, H_b, L, M_b_label, H_b_label, L_label, 
+            line, label
+        )
+        self.play(FadeOut(ALL))
 
 
 class Feuerbach(Scene):
@@ -2207,7 +2304,7 @@ class Feuerbach(Scene):
 
         omega_2 = Circle(arc_center=M_b.get_center(), 
                     radius=Line(M_b.get_center(), X.get_center()).get_length(), color=GREEN_D).set_stroke(opacity=0.95)
-        omega_2_label = Tex(r"$\mathrm{\omega_2}$", font_size=30).move_to(0.92*RIGHT+0.3*UP)
+        omega_2_label = Tex(r"$\mathrm{\omega_2}$", font_size=30).move_to(0.75*RIGHT+0.45*UP)
 
         ALL = VGroup(
             A, B, C, A_label, B_label, C_label, 
@@ -2261,13 +2358,13 @@ class Feuerbach(Scene):
             feuerbach_point_C,
         )))
 
-        label = Tex("During the proof, we will consider only one of the three escribed circles", font_size=40)
+        label = Tex("During the proof, we will consider only one escribed circles", font_size=44)
         self.play(Fancy_label(label))
         self.play(FadeOut(VGroup(arc_A, excircle_C)))
         self.wait(0.5)
         self.play(FadeOut(label))
 
-        label = Tex("Let's denote the inscribed and escribed circle as $\omega$ and $\omega_b$ respectively")
+        label = Tex("Let's denote the inscribed and escribed circle as $\omega$ and $\omega_b$", font_size=44)
         self.play(Fancy_label(label))
         self.play(FadeIn(incircle_label))
         self.play(FadeIn(excircle_B_label))
@@ -2283,10 +2380,10 @@ class Feuerbach(Scene):
             FadeIn(VGroup(A, A_label)),
             FadeIn(VGroup(B, B_label)),
             FadeIn(VGroup(C, C_label)),
-            run_time=1, lag_ratio=0.75
+            run_time=1.5, lag_ratio=0.75
         ))
 
-        label = Tex("Let's draw the altitude of $BH_b$")
+        label = Tex("Let's draw the altitude $BH_b$")
         self.play(Fancy_label(label))
         self.play(Create(BH_b))
         self.play(FadeIn(VGroup(H_b, H_b_label, H_b_angle)))
@@ -2341,7 +2438,7 @@ class Feuerbach(Scene):
         label = Tex("Let $L$ be the center of the arc $H_bM_b$ of the Euler's circle")
         self.play(Fancy_label(label))
         self.play(FadeIn(VGroup(L, L_label)))
-        self.wait(0.5)
+        self.wait()
         self.play(FadeOut(label))
 
         label = Tex("Let's construct a circle $\omega_1$ with center in $L$ and radius $LM_b$")
@@ -2364,13 +2461,13 @@ class Feuerbach(Scene):
         self.wait(1.5)
         self.play(FadeOut(label))
 
-        label = Tex("Let's construct a circle $\omega_2$ with the center in $M_b$ and the radius $M_bX$", font_size=38)
+        label = Tex("Construct a circle $\omega_2$ with the center $M_b$ and the radius $M_bX$", font_size=42)
         self.play(Fancy_label(label))
         self.play(
             omega_1.animate.set_stroke(opacity=0.3),
             omega_1_label.animate.set_opacity(0.5),
             VGroup(H_b, M_b, H_b_label, M_b_label, L, L_label).animate.set_opacity(0.5),
-            VGroup(X, Y, X_label, Y_label, M_b, M_b_label).animate.set_opacity(1)
+            VGroup(X, Y, X_label, Y_label).animate.set_opacity(1)
         )
         self.play(Create(omega_2))
         self.play(FadeIn(omega_2_label))
@@ -2397,7 +2494,7 @@ class Feuerbach(Scene):
                   VGroup(incircle_label, omega_2_label).animate.set_opacity(1))
         self.play(FadeOut(label))
 
-        label = Tex("But then the circles $\omega_1$ and $\omega$ are perpendicular too", font_size=46)
+        label = Tex("$I$ is on the line $H_aH_c$, so $\omega$ and $\omega_1$ are also perpendicular", font_size=46)
         self.play(Fancy_label(label))
         self.play(omega_2.animate.set_stroke(opacity=0.4), 
                   omega_1.animate.set_stroke(opacity=1),
@@ -2439,45 +2536,185 @@ class Feuerbach(Scene):
         self.play(Fancy_label(label))
         self.play(FadeOut(VGroup(I_bY, angle_I_bYA)), VGroup(Y, I_b, Y_label, I_b_label).animate.set_opacity(0.4))
         self.play(
-            omega_1.animate.set_stroke(opacity=0.4),
-            omega_1_label.animate.set_opacity(0.4),
-            omega_2.animate.set_stroke(opacity=1),
-            omega_2_label.animate.set_opacity(1),
+            omega_1.animate.set_stroke(opacity=1),
+            omega_1_label.animate.set_opacity(1),
+            omega_2.animate.set_stroke(opacity=0.4),
+            omega_2_label.animate.set_opacity(0.4),
         )
         self.play(FadeOut(label))
 
         label = Tex("Then by the external criteria of Archimedes, $\Omega$ and $\omega_b$ touch")
         self.play(Fancy_label(label))
         self.play(
-            omega_2.animate.set_stroke(opacity=0.4),
-            omega_2_label.animate.set_opacity(0.4),
+            omega_1.animate.set_stroke(opacity=0.4),
+            omega_1_label.animate.set_opacity(0.4),
             euler_circle.animate.set_stroke(opacity=1),
             euler_circle_label.animate.set_opacity(1),
         )
         self.play(FadeIn(feuerbach_point_B))
-        self.wait(2)
+        self.wait(3.5)
         self.play(FadeOut(VGroup(ALL, label, feuerbach_point_B)))
+
+        self.wait(3)
+
+
+class Circles_16(Scene):
+    def construct(self):
+        black_rectangle = Rectangle(height=1.2,width=20).shift(3.5*UP).set_color(BLACK).set_opacity(1).set_z_index(101)
+        self.add(black_rectangle)
+
+        A = Dot(2*LEFT+2*DOWN).set_z_index(1)
+        B = Dot(1.2*LEFT+1.4*UP).set_z_index(1)
+        C = Dot(2*RIGHT+2*DOWN).set_z_index(1)
+
+        a = Line(B.get_center(), C.get_center(), color=BLUE)
+        b = Line(A.get_center(), C.get_center(), color=BLUE)
+        c = Line(A.get_center(), B.get_center(), color=BLUE)
+
+        euler_circle = EulerCircle(A.get_center(), B.get_center(), C.get_center(), color=RED).set_z_index(1)
+
+        incircle = InscribedCircle(A.get_center(), B.get_center(), C.get_center(), color=GREEN, stroke_width=2)
+        excircle_A = EscribedCircle(B.get_center(), A.get_center(), C.get_center(), color=GREEN, stroke_width=2)
+        excircle_B = EscribedCircle(A.get_center(), B.get_center(), C.get_center(), color=GREEN, stroke_width=2)
+        excircle_C = EscribedCircle(B.get_center(), C.get_center(), A.get_center(), color=GREEN, stroke_width=2)
+
+        AH_a = Altitude(B.get_center(), A.get_center(), C.get_center(), color=YELLOW)
+        BH_b = Altitude(A.get_center(), B.get_center(), C.get_center(), color=YELLOW)
+        CH_c = Altitude(B.get_center(), C.get_center(), A.get_center(), color=YELLOW)
+
+        H_a = Dot(AH_a.dot).set_z_index(2)
+        H_b = Dot(BH_b.dot).set_z_index(2)
+        H_c = Dot(CH_c.dot).set_z_index(2)
+
+        H_a_angle = AH_a.angles(color=YELLOW, radius=0.2)[0]
+        H_b_angle = BH_b.angles(color=YELLOW, radius=0.2)[0]
+        H_c_angle = CH_c.angles(color=YELLOW, radius=0.2)[0]
+
+        H = Dot(intersection_lines(AH_a, BH_b)).set_z_index(1)
+
+
+
+
+        label = Tex("Finally, another beautiful construction")
+        self.play(Fancy_label(label))
+        self.play(LaggedStart(
+            FadeIn(A),
+            FadeIn(B),
+            FadeIn(C),
+            run_time=1.4, lag_ratio=0.75
+        ))
+        self.play(LaggedStart(
+            Create(a),
+            Create(b),
+            Create(c),
+            run_time=3, lag_ratio=0.9
+        ))
+        self.play(FadeOut(label))
+
+        label = Tex("Now let's construct the Euler's circle")
+        self.play(Fancy_label(label))
+        self.play(Create(euler_circle))
+        self.wait(0.4)
+        self.play(FadeOut(label))
+
+        label = Tex("Find the orthocenter")
+        self.play(Fancy_label(label))
         
+        self.play(Create(AH_a))
+        self.play(FadeIn(VGroup(H_a, H_a_angle)), run_time=0.7)
         
-  
+        self.play(Create(BH_b))
+        self.play(FadeIn(VGroup(H_b, H_b_angle)), run_time=0.7)
 
+        self.play(Create(CH_c))
+        self.play(FadeIn(VGroup(H_c, H_c_angle)), run_time=0.7)
 
-   
+        self.play(VGroup(AH_a, BH_b, CH_c, H_a, H_b, H_c).animate.set_opacity(0.5), 
+                  VGroup(H_a_angle, H_b_angle, H_c_angle).animate.set_stroke(opacity=0.5))
+        self.play(FadeIn(H))
+        self.play(FadeOut(label))
 
+        label = Tex("And now let's build 16 circles that touch the Euler's circle")
+        self.play(Fancy_label(label))
+        self.play(FadeOut(VGroup(AH_a, BH_b, CH_c, H_a, H_b, H_c, H_a_angle, H_b_angle, H_c_angle)))
 
+        self.play(Create(incircle))
 
+        line_AB = Line(A.get_center(), B.get_center(), color=BLUE).set_length(20).set_z_index(-1).set_opacity(0.35)
+        line_BC = Line(B.get_center(), C.get_center(), color=BLUE).set_length(20).set_z_index(-1).set_opacity(0.35)
+        line_CA = Line(C.get_center(), A.get_center(), color=BLUE).set_length(20).set_z_index(-1).set_opacity(0.35)
+        self.play(FadeIn(VGroup(line_AB, line_BC, line_CA)))
 
+        self.play(Create(excircle_A))
+        self.play(Create(excircle_B))
+        self.play(Create(excircle_C))
 
+        self.play(FadeOut(VGroup(line_CA, line_BC)))
 
+        line_AH = Line(A.get_center(), H.get_center(), color=BLUE).set_length(20).set_z_index(-1).set_opacity(0.35)
+        line_BH = Line(B.get_center(), H.get_center(), color=BLUE).set_length(20).set_z_index(-1).set_opacity(0.35)
 
+        self.play(FadeIn(VGroup(line_AH, line_BH)))
 
+        incircle_1 = InscribedCircle(A.get_center(), B.get_center(), H.get_center(), color=GREEN, stroke_width=2)
 
+        excircle_1 = EscribedCircle(A.get_center(), B.get_center(), H.get_center(), color=GREEN, stroke_width=2)
+        excircle_2 = EscribedCircle(B.get_center(), A.get_center(), H.get_center(), color=GREEN, stroke_width=2)
+        excircle_3 = EscribedCircle(A.get_center(), H.get_center(), B.get_center(), color=GREEN, stroke_width=2)
 
+        self.play(Create(incircle_1))
+        self.play(Create(excircle_1))
+        self.play(Create(excircle_2))
+        self.play(Create(excircle_3))
 
+        self.play(FadeOut(VGroup(line_AH, line_AB)))
 
+        line_CH = Line(C.get_center(), H.get_center(), color=BLUE).set_length(20).set_z_index(-1).set_opacity(0.35)
+        
+        self.play(FadeIn(VGroup(line_CH, line_BC)))
 
+        incircle_2 = InscribedCircle(C.get_center(), B.get_center(), H.get_center(), color=GREEN, stroke_width=2)
 
+        excircle_4 = EscribedCircle(C.get_center(), B.get_center(), H.get_center(), color=GREEN, stroke_width=2)
+        excircle_5 = EscribedCircle(B.get_center(), C.get_center(), H.get_center(), color=GREEN, stroke_width=2)
+        excircle_6 = EscribedCircle(C.get_center(), H.get_center(), B.get_center(), color=GREEN, stroke_width=2)
 
+        self.play(Create(incircle_2))
+        self.play(Create(excircle_4))
+        self.play(Create(excircle_5))
+        self.play(Create(excircle_6))
+
+        self.play(FadeOut(VGroup(line_BC, line_BH)))
+        
+        self.play(FadeIn(VGroup(line_AH, line_CA)))
+
+        incircle_3 = InscribedCircle(C.get_center(), A.get_center(), H.get_center(), color=GREEN, stroke_width=2)
+
+        excircle_7 = EscribedCircle(C.get_center(), A.get_center(), H.get_center(), color=GREEN, stroke_width=2)
+        excircle_8 = EscribedCircle(A.get_center(), C.get_center(), H.get_center(), color=GREEN, stroke_width=2)
+        excircle_9 = EscribedCircle(C.get_center(), H.get_center(), A.get_center(), color=GREEN, stroke_width=2)
+
+        self.play(Create(incircle_3))
+        self.play(Create(excircle_7))
+        self.play(Create(excircle_8))
+        self.play(Create(excircle_9))
+
+        self.play(FadeOut(VGroup(line_CA, line_CH, line_AH, H)))
+        self.play(FadeOut(label))
+
+        label = Tex("Prove this using Feuerbach's theorem")
+        self.play(Fancy_label(label))
+        self.wait(2)
+
+        ALL = VGroup(
+            A, B, C, a, b, c, 
+            incircle, excircle_A, excircle_B, excircle_C,
+            incircle_1, excircle_1, excircle_2, excircle_3,
+            incircle_2, excircle_4, excircle_5, excircle_6,
+            incircle_3, excircle_7, excircle_8, excircle_9,
+            label, euler_circle
+        )
+        self.play(FadeOut(ALL))
 
         self.wait(3)
 
