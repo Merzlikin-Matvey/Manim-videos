@@ -1,4 +1,5 @@
 from ManimExtra import *
+#ManimExtra v0.1
 
 config.max_files_cached = 4096
 
